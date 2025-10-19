@@ -1,19 +1,17 @@
 package ui.panels;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 
 import javax.swing.JPanel;
 
 import game.entities.Player;
 import game.input.KeyboardInput;
 
+/**
+ * This is a subclass of JPanel that displays and runs the game.
+ */
 public class GamePanel extends JPanel implements Runnable {
-    /**
-     * This is a sub-class of JPanel that displays and runs the game.
-     */
+
     public static final long DESIRED_FPS = 60;
     // Floor division, but input feels smoother compared to using Nanoseconds
     public static final long DESIRED_FRAMETIME_MILLIS = 1000 / DESIRED_FPS;
@@ -24,6 +22,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     Thread gameThread;
     KeyboardInput input = new KeyboardInput();
+
+    boolean drawFPS = true;
+    int fps = 0;
 
     public GamePanel(int width, int height) {
         this.width = width;
@@ -53,12 +54,28 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
+        // Variables for FPS Counting. Unused if drawFPS == false
+        long lastSecondTime = System.currentTimeMillis();
+        int frame_count = 0;
+
         while (this.gameThread != null) {
             // STEP 1: update game information
             update();
 
             // STEP 2: draw updated game information on the screen
             repaint(); // This calls the paintComponent(...) method defined below
+
+            // Optional: Count & update FPS
+            if (drawFPS) {
+                frame_count++;
+                long currentFrameTime = System.currentTimeMillis();
+                if (currentFrameTime - lastSecondTime > 999) {
+                    // At least 1 sec passed -> update approx. FPS
+                    this.fps = frame_count;
+                    lastSecondTime = currentFrameTime;
+                    frame_count = 0;
+                }
+            }
 
             // STEP 3: Wait a bit for the CPU to cool down :)
             try {
@@ -86,6 +103,16 @@ public class GamePanel extends JPanel implements Runnable {
             this.player.moveDown();
     }
 
+    /**
+     * Draws an approximate FPS value in the upper left corner of the game panel.
+     * @param g2d The Graphics2D object of the game panel
+     */
+    private void printFPSOnPanel(Graphics2D g2d) {
+        g2d.setColor(Color.gray);
+        g2d.setFont(new Font("Arial", Font.BOLD, 12));
+        g2d.drawString(this.fps + " FPS", 0, 12);
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -95,6 +122,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Give player the pencil to draw h*self
         this.player.draw(g2d);
+
+        if(drawFPS) printFPSOnPanel(g2d);
 
         // Free resources
         g2d.dispose();
