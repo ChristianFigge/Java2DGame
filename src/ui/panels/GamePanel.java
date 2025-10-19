@@ -59,28 +59,39 @@ public class GamePanel extends JPanel implements Runnable {
         int frame_count = 0;
 
         while (this.gameThread != null) {
-            // STEP 1: update game information
+            // While the game grows more complex, execution of update() and repaint()
+            // might take a few milliseconds on slower machines.
+            // To offset this delay for the sleeptime per frame, we measure the
+            // execution time and subtract it from the desired frame time.
+            long lastFrameTime = System.currentTimeMillis();
+
+            // STEP 1: Update game information
             update();
 
-            // STEP 2: draw updated game information on the screen
+            // STEP 2: Draw updated game information on the screen
             repaint(); // This calls the paintComponent(...) method defined below
+
+            long currentFrameTime = System.currentTimeMillis();
 
             // Optional: Count & update FPS
             if (drawFPS) {
                 frame_count++;
-                long currentFrameTime = System.currentTimeMillis();
                 double millisecsElapsed = currentFrameTime - lastSecondTime;
                 if (millisecsElapsed > 999) {
                     // At least 1 sec passed -> update approx. FPS
                     this.fps = Math.round(frame_count / (millisecsElapsed / 1000.0));
+                    // (Re)Set variables for the next second
                     lastSecondTime = currentFrameTime;
                     frame_count = 0;
                 }
             }
 
             // STEP 3: Wait a bit for the CPU to cool down :)
+            long frametime = currentFrameTime - lastFrameTime;
+            long sleeptime = DESIRED_FRAMETIME_MILLIS - frametime;
+            if (sleeptime < 1) sleeptime = 1;
             try {
-                Thread.sleep(DESIRED_FRAMETIME_MILLIS);
+                Thread.sleep(sleeptime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
