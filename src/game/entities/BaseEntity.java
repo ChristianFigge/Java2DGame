@@ -100,8 +100,8 @@ public abstract class BaseEntity<S extends Shape> {
         double y = getY();
         return
                 x >= 0 &&
-                        x + getWidth() < panelWidth &&
-                        y >= 0 &&
-                        y + getHeight() < panelHeight;
+                x + getWidth() < panelWidth &&
+                y >= 0 &&
+                y + getHeight() < panelHeight;
     }
 }

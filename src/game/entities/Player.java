@@ -55,4 +55,9 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
         if (hitbox.y > bottom_bound)
             hitbox.y = bottom_bound;
     }
+
+    public void setPos(int posX, int posY) {
+        hitbox.x = posX;
+        hitbox.y = posY;
+    }
 }

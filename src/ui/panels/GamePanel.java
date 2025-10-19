@@ -1,17 +1,19 @@
 package ui.panels;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
 import game.entities.Player;
 import game.input.KeyboardInput;
+import game.input.MouseInput;
 
 /**
  * This is a subclass of JPanel that displays and runs the game.
  */
 public class GamePanel extends JPanel implements Runnable {
-
+    /*+++++++++++++++++++++++++ ATTRIBUTES +++++++++++++++++++++++++*/
     public static final long DESIRED_FPS = 60;
     // Floor division, but input feels smoother compared to using Nanoseconds
     public static final long DESIRED_FRAMETIME_MILLIS = 1000 / DESIRED_FPS;
@@ -21,15 +23,19 @@ public class GamePanel extends JPanel implements Runnable {
     Player player;
 
     Thread gameThread;
-    KeyboardInput input = new KeyboardInput();
+    KeyboardInput keyboard = new KeyboardInput();
+    MouseInput mouse = new MouseInput();
 
     boolean drawFPS = true;
     long fps = 0;
+    /*------------------------- ATTRIBUTES -------------------------*/
 
+    /*++++++++++++++++++++ CONSTRUCTORS / INIT +++++++++++++++++++++*/
     public GamePanel(int width, int height) {
         this.width = width;
         this.height = height;
-        this.player = new Player(100, 100, width, height);
+        // Spawn player entity in the center of the panel (approx)
+        this.player = new Player(width/2.0, height/2.0, width, height);
 
         setPreferredSize(new Dimension(width, height));
         setBackground(Color.black);
@@ -37,7 +43,21 @@ public class GamePanel extends JPanel implements Runnable {
         setDoubleBuffered(true); // Use drawing buffer
         setFocusable(true); // Needed for KeyListener to work
 
-        addKeyListener(this.input); // Add listener for keyboard events
+        addKeyListener(this.keyboard); // Add listener for keyboard events
+
+        // Make mouse cursor invisible (only while it's inside the panel)
+        setCursor(
+                Toolkit.getDefaultToolkit().createCustomCursor(
+                        new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB),
+                        new Point(),
+                        "blank"
+                )
+        );
+
+        // There are different interfaces for mouse motion and button/wheel inputs.
+        // Our MouseListener combines them, though
+        addMouseMotionListener(this.mouse);
+        addMouseListener(this.mouse);
     }
 
     /**
@@ -51,7 +71,12 @@ public class GamePanel extends JPanel implements Runnable {
         this.gameThread = new Thread(this);
         this.gameThread.start(); // executes run()
     }
+    /*-------------------- CONSTRUCTORS / INIT ---------------------*/
 
+    /*++++++++++++++++++++++++++ METHODS +++++++++++++++++++++++++++*/
+    /**
+     * Runs the game loop, ideally in a separate Thread.
+     */
     @Override
     public void run() {
         // Variables for FPS Counting. Unused if drawFPS == false
@@ -61,7 +86,7 @@ public class GamePanel extends JPanel implements Runnable {
         while (this.gameThread != null) {
             // While the game grows more complex, execution of update() and repaint()
             // might take a few milliseconds on slower machines.
-            // To offset this delay for the sleeptime per frame, we measure the
+            // To offset this delay for the sleep time per frame, we measure the
             // execution time and subtract it from the desired frame time.
             long lastFrameTime = System.currentTimeMillis();
 
@@ -99,20 +124,38 @@ public class GamePanel extends JPanel implements Runnable {
 
     }
 
+    /**
+     * Updates the game state. Should be called once every frame
+     * from within the game loop.
+     */
     public void update() {
-        handleKeyboardInput();
+        // For testing purposes, we either use mouse or keyboard
+        // for changing the player's position. Subject to change.
+        if(mouse.isInPanel)
+            handleMouseInput();
+        else
+            handleKeyboardInput();
     }
 
+    /**
+     * Reads keyboard input and changes the game state accordingly.
+     */
     private void handleKeyboardInput() {
-        // Read input and change game information accordingly
-        if (input.left)
+        if (keyboard.left)
             this.player.moveLeft();
-        if (input.right)
+        if (keyboard.right)
             this.player.moveRight();
-        if (input.up)
+        if (keyboard.up)
             this.player.moveUp();
-        if (input.down)
+        if (keyboard.down)
             this.player.moveDown();
+    }
+
+    /**
+     * Reads mouse input and changes the game state accordingly.
+     */
+    private void handleMouseInput() {
+        player.setPos(mouse.cursorPosX, mouse.cursorPosY);
     }
 
     /**
@@ -125,6 +168,11 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.drawString(this.fps + " FPS", 0, 12);
     }
 
+    /**
+     * Paints a frame on the game panel based on the current game state.
+     * Should not be called directly, but via JPanel.repaint() from within the game loop.
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
