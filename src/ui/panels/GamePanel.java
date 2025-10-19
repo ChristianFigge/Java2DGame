@@ -24,7 +24,7 @@ public class GamePanel extends JPanel implements Runnable {
     KeyboardInput input = new KeyboardInput();
 
     boolean drawFPS = true;
-    int fps = 0;
+    long fps = 0;
 
     public GamePanel(int width, int height) {
         this.width = width;
@@ -69,9 +69,10 @@ public class GamePanel extends JPanel implements Runnable {
             if (drawFPS) {
                 frame_count++;
                 long currentFrameTime = System.currentTimeMillis();
-                if (currentFrameTime - lastSecondTime > 999) {
+                double millisecsElapsed = currentFrameTime - lastSecondTime;
+                if (millisecsElapsed > 999) {
                     // At least 1 sec passed -> update approx. FPS
-                    this.fps = frame_count;
+                    this.fps = Math.round(frame_count / (millisecsElapsed / 1000.0));
                     lastSecondTime = currentFrameTime;
                     frame_count = 0;
                 }
