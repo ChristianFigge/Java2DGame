@@ -1,13 +1,16 @@
 package game.entities;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.util.List;
 
 public class Player extends BaseEntity<Ellipse2D.Double> {
 
     /*+++++++++++++++++++++++++ ATTRIBUTES +++++++++++++++++++++++++*/
     public static final double DEFAULT_WIDTH = 21.0;
     public static final double DEFAULT_HEIGHT = 21.0;
+
+    private boolean isHit = false;
     /*------------------------- ATTRIBUTES -------------------------*/
 
     /*++++++++++++++++++++ CONSTRUCTORS / INIT +++++++++++++++++++++*/
@@ -26,6 +29,10 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
     /*-------------------- CONSTRUCTORS / INIT ---------------------*/
 
     /*++++++++++++++++++++++++++ METHODS +++++++++++++++++++++++++++*/
+    public void setHitboxColor(Color color) {
+        this.hitboxColor = color;
+    }
+
     public void moveLeft() {
         hitbox.x -= speed;
         // Prevent entity from leaving the game panel
@@ -59,5 +66,23 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
     public void setPos(int posX, int posY) {
         hitbox.x = posX;
         hitbox.y = posY;
+    }
+
+    public boolean isHit() { return this.isHit; }
+
+    /**
+     * Checks if the Player collides with any Entity in the given List
+     * and sets the isHit Attribute accordingly.
+     * @param entities A List of BaseEntities (e.g. Obstacles)
+     */
+    public <T extends BaseEntity<?>> boolean isHitBy(List<T> entities) {
+        for(T e: entities) {
+            if(this.collidesWith(e)) {
+                this.isHit = true;
+                return true;
+            }
+        }
+        this.isHit = false;
+        return false;
     }
 }

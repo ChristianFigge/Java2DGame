@@ -104,4 +104,8 @@ public abstract class BaseEntity<S extends Shape> {
                 y >= 0 &&
                 y + getHeight() < panelHeight;
     }
+
+    public boolean collidesWith(BaseEntity<? extends Shape> other) {
+        return this.hitbox.intersects(other.hitbox.getBounds2D());
+    }
 }
