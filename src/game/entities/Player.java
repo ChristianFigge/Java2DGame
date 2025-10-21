@@ -6,16 +6,16 @@ import java.awt.geom.Ellipse2D;
 public class Player extends BaseEntity<Ellipse2D.Double> {
 
     /*+++++++++++++++++++++++++ ATTRIBUTES +++++++++++++++++++++++++*/
-    private static final double WIDTH = 21.0;
-    private static final double HEIGHT = 21.0;
+    public static final double DEFAULT_WIDTH = 21.0;
+    public static final double DEFAULT_HEIGHT = 21.0;
     /*------------------------- ATTRIBUTES -------------------------*/
 
     /*++++++++++++++++++++ CONSTRUCTORS / INIT +++++++++++++++++++++*/
     public Player(double posX, double posY, int panelWidth, int panelHeight) {
         // Call parent class constructor and set some attributes
-        super(posX, posY, WIDTH, HEIGHT, panelWidth, panelHeight);
+        super(posX, posY, DEFAULT_WIDTH, DEFAULT_HEIGHT, panelWidth, panelHeight);
         hitboxColor = Color.green;
-        speed = 5.0;
+        speed = 2.0;
     }
 
     @Override
