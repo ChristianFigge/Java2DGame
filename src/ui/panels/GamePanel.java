@@ -2,12 +2,15 @@ package ui.panels;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.LinkedList;
 
 import javax.swing.JPanel;
 
+import game.entities.Obstacle;
 import game.entities.Player;
 import game.input.KeyboardInput;
 import game.input.MouseInput;
+import game.util.ObstacleRowFactory;
 
 /**
  * This is a subclass of JPanel that displays and runs the game.
@@ -22,6 +25,10 @@ public class GamePanel extends JPanel implements Runnable {
     int height;
     Player player;
 
+    double gameDifficulty = 1.0;
+    ObstacleRowFactory obsRowFactory;
+    LinkedList<Obstacle> obstacles = new LinkedList<>();
+
     Thread gameThread;
     KeyboardInput keyboard = new KeyboardInput();
     MouseInput mouse = new MouseInput();
@@ -35,7 +42,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.width = width;
         this.height = height;
         // Spawn player entity in the center of the panel (approx)
-        this.player = new Player(width/2.0, height/2.0, width, height);
+        this.player = new Player(width / 2.0, height / 2.0, width, height);
+        this.obsRowFactory = new ObstacleRowFactory(gameDifficulty, width, height);
 
         setPreferredSize(new Dimension(width, height));
         setBackground(Color.black);
@@ -74,6 +82,7 @@ public class GamePanel extends JPanel implements Runnable {
     /*-------------------- CONSTRUCTORS / INIT ---------------------*/
 
     /*++++++++++++++++++++++++++ METHODS +++++++++++++++++++++++++++*/
+
     /**
      * Runs the game loop, ideally in a separate Thread.
      */
@@ -131,10 +140,31 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
         // For testing purposes, we either use mouse or keyboard
         // for changing the player's position. Subject to change.
-        if(mouse.isInPanel)
+        if (mouse.isInPanel)
             handleMouseInput();
         else
             handleKeyboardInput();
+
+        if(player.isHitBy(obstacles)) {
+            // TODO Punish player, e.g. lose score points or life
+            player.setHitboxColor(Color.red);
+        } else {
+            player.setHitboxColor(Color.green);
+        }
+
+        // Move Obstacles down the panel
+        descendObstacles();
+
+        // If needed, create new Obstacles
+        int obsDistance = 200; // TODO use gameDifficulty to calculate obstacle distance
+        if (obstacles.isEmpty() || obstacles.peekLast().getY() > obsDistance) {
+            obsRowFactory.createObstacleRow(obstacles);
+        }
+
+        // Remove obstacles that have already left the panel, so we don't run out of RAM
+        while (!(obstacles.isEmpty()) && obstacles.peekFirst().getY() > this.width) {
+            obstacles.removeFirst();
+        }
     }
 
     /**
@@ -160,6 +190,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     /**
      * Draws an approximate FPS value in the upper left corner of the game panel.
+     *
      * @param g2d The Graphics2D object of the game panel
      */
     private void printFPSOnPanel(Graphics2D g2d) {
@@ -168,9 +199,16 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.drawString(this.fps + " FPS", 0, 12);
     }
 
+    private void descendObstacles() {
+        for (Obstacle obs : obstacles) {
+            obs.moveDown();
+        }
+    }
+
     /**
      * Paints a frame on the game panel based on the current game state.
      * Should not be called directly, but via JPanel.repaint() from within the game loop.
+     *
      * @param g the <code>Graphics</code> object to protect
      */
     @Override
@@ -180,10 +218,15 @@ public class GamePanel extends JPanel implements Runnable {
         // Graphics2D will be our "pencil" for drawing stuff on the panel
         Graphics2D g2d = (Graphics2D) g;
 
+        // Draw obstacles
+        for (Obstacle obs : obstacles)
+            obs.draw(g2d);
+
         // Give player the pencil to draw h*self
         this.player.draw(g2d);
 
-        if(drawFPS) printFPSOnPanel(g2d);
+        if (drawFPS)
+            printFPSOnPanel(g2d);
 
         // Free resources
         g2d.dispose();
