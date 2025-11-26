@@ -55,6 +55,11 @@ public class GamePanel extends JPanel implements Runnable {
 
         addKeyListener(this.keyboard); // Add listener for keyboard events
 
+        // Init background image (assumes square image!)
+        int size = Math.max(this.width, this.height);
+        imgBackground = ResourceHelper.loadImageAndScale("/images/bg_space1.png", size, size);
+
+        /*
         // Make mouse cursor invisible (only while it's inside the panel)
         setCursor(
                 Toolkit.getDefaultToolkit().createCustomCursor(
@@ -68,11 +73,7 @@ public class GamePanel extends JPanel implements Runnable {
         // Our MouseListener combines them, though
         addMouseMotionListener(this.mouse);
         addMouseListener(this.mouse);
-
-        // Init background image
-        // Load original Image of arbitrary size
-        int size = Math.max(this.width, this.height);
-        imgBackground = ResourceHelper.loadImageAndScale("/images/background_space1.png", size, size);
+        */
     }
 
     /**
