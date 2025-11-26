@@ -1,8 +1,13 @@
 package game.entities;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class Player extends BaseEntity<Ellipse2D.Double> {
 
@@ -13,6 +18,7 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
     public static final double BOOST_SPEED = 5.0;
 
     private boolean isHit = false;
+    private BufferedImage imgShip;
     /*------------------------- ATTRIBUTES -------------------------*/
 
     /*++++++++++++++++++++ CONSTRUCTORS / INIT +++++++++++++++++++++*/
@@ -21,6 +27,18 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
         super(posX, posY, DEFAULT_WIDTH, DEFAULT_HEIGHT, panelWidth, panelHeight);
         hitboxColor = Color.green;
         speed = DEFAULT_SPEED;
+
+        // Load spaceship sprite
+        try {
+            imgShip = ImageIO.read(
+                    Objects.requireNonNull(
+                            this.getClass().getResource("/images/spaceship_player.png")
+                    )
+            );
+            System.out.println("IMAGE LOADED!");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -31,6 +49,30 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
     /*-------------------- CONSTRUCTORS / INIT ---------------------*/
 
     /*++++++++++++++++++++++++++ METHODS +++++++++++++++++++++++++++*/
+    @Override
+    public void draw(Graphics2D g2d) {
+
+        if(this.isHit) {
+            g2d.setColor(Color.red);
+            g2d.fill(hitbox);
+        }
+
+
+        // DEBUG: Show hitbox
+        //g2d.setColor(this.hitboxColor);
+        //g2d.fill(hitbox);
+
+        //g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+        // Use affine transform for positioning & scaling of the spaceship image
+        AffineTransform at = new AffineTransform();
+        at.translate(hitbox.x, hitbox.y);
+        at.scale(DEFAULT_WIDTH / imgShip.getWidth(),
+                DEFAULT_HEIGHT / imgShip.getHeight());
+
+        g2d.drawImage(imgShip, at, null);
+    }
+
     public void setHitboxColor(Color color) {
         this.hitboxColor = color;
     }
