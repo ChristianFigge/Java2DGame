@@ -12,8 +12,8 @@ import java.util.Objects;
 public class Player extends BaseEntity<Ellipse2D.Double> {
 
     /*+++++++++++++++++++++++++ ATTRIBUTES +++++++++++++++++++++++++*/
-    public static final double DEFAULT_WIDTH = 21.0;
-    public static final double DEFAULT_HEIGHT = 21.0;
+    public static final double DEFAULT_WIDTH = 40.0;
+    public static final double DEFAULT_HEIGHT = 40.0;
     public static final double DEFAULT_SPEED = 2.0;
     public static final double BOOST_SPEED = 5.0;
 
@@ -35,7 +35,6 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
                             this.getClass().getResource("/images/spaceship_player.png")
                     )
             );
-            System.out.println("IMAGE LOADED!");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -52,19 +51,18 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
     @Override
     public void draw(Graphics2D g2d) {
 
+        // Feedback if player hits an obstacle: Draw red hitbox outline.
         if(this.isHit) {
             g2d.setColor(Color.red);
-            g2d.fill(hitbox);
+            //g2d.fill(hitbox);
+            g2d.setStroke(new BasicStroke(3f));
+            g2d.draw(hitbox);
         }
 
-
-        // DEBUG: Show hitbox
-        //g2d.setColor(this.hitboxColor);
-        //g2d.fill(hitbox);
-
-        //g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
         // Use affine transform for positioning & scaling of the spaceship image
+        // (Not very efficient, but flexible and easy to implement. Will do for now)
         AffineTransform at = new AffineTransform();
         at.translate(hitbox.x, hitbox.y);
         at.scale(DEFAULT_WIDTH / imgShip.getWidth(),
