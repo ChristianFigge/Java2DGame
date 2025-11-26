@@ -72,7 +72,7 @@ public class GamePanel extends JPanel implements Runnable {
      * Creates a GamePanel with default width and height (480x360).
      */
     public GamePanel() {
-        this(480, 360);
+        this(800, 600);
     }
 
     public void startGame() {
@@ -179,6 +179,10 @@ public class GamePanel extends JPanel implements Runnable {
             this.player.moveUp();
         if (keyboard.down)
             this.player.moveDown();
+        if (keyboard.sprint)
+            this.player.setSpeed(Player.BOOST_SPEED);
+        else
+            this.player.setSpeed(Player.DEFAULT_SPEED);
     }
 
     /**

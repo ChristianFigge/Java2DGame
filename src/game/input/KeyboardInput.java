@@ -12,6 +12,7 @@ interface KeyBinds {
     int RIGHT	= KeyEvent.VK_D;
     int UP		= KeyEvent.VK_W;
     int DOWN	= KeyEvent.VK_S;
+    int SPRINT  = KeyEvent.VK_SHIFT;
 }
 
 /**
@@ -22,7 +23,7 @@ interface KeyBinds {
  * within the game loop and call the according update methods from there.
  */
 public class KeyboardInput implements KeyListener {
-    public boolean left, right, up, down;
+    public boolean left, right, up, down, sprint;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -36,6 +37,7 @@ public class KeyboardInput implements KeyListener {
             case KeyBinds.RIGHT: right	= true; break;
             case KeyBinds.UP: up		= true; break;
             case KeyBinds.DOWN: down	= true; break;
+            case KeyBinds.SPRINT: sprint = true; break;
         }
     }
 
@@ -46,6 +48,7 @@ public class KeyboardInput implements KeyListener {
             case KeyBinds.RIGHT: right	= false; break;
             case KeyBinds.UP: up		= false; break;
             case KeyBinds.DOWN: down	= false; break;
+            case KeyBinds.SPRINT: sprint = false; break;
         }
     }
 }

@@ -9,6 +9,8 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
     /*+++++++++++++++++++++++++ ATTRIBUTES +++++++++++++++++++++++++*/
     public static final double DEFAULT_WIDTH = 21.0;
     public static final double DEFAULT_HEIGHT = 21.0;
+    public static final double DEFAULT_SPEED = 2.0;
+    public static final double BOOST_SPEED = 5.0;
 
     private boolean isHit = false;
     /*------------------------- ATTRIBUTES -------------------------*/
@@ -18,7 +20,7 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
         // Call parent class constructor and set some attributes
         super(posX, posY, DEFAULT_WIDTH, DEFAULT_HEIGHT, panelWidth, panelHeight);
         hitboxColor = Color.green;
-        speed = 2.0;
+        speed = DEFAULT_SPEED;
     }
 
     @Override
