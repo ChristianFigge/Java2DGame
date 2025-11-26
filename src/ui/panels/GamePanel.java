@@ -11,6 +11,7 @@ import game.entities.Player;
 import game.input.KeyboardInput;
 import game.input.MouseInput;
 import game.util.ObstacleRowFactory;
+import game.util.ResourceHelper;
 
 /**
  * This is a subclass of JPanel that displays and runs the game.
@@ -24,6 +25,7 @@ public class GamePanel extends JPanel implements Runnable {
     int width;
     int height;
     Player player;
+    BufferedImage imgBackground;
 
     double gameDifficulty = 1.0;
     ObstacleRowFactory obsRowFactory;
@@ -66,6 +68,11 @@ public class GamePanel extends JPanel implements Runnable {
         // Our MouseListener combines them, though
         addMouseMotionListener(this.mouse);
         addMouseListener(this.mouse);
+
+        // Init background image
+        // Load original Image of arbitrary size
+        int size = Math.max(this.width, this.height);
+        imgBackground = ResourceHelper.loadImageAndScale("/images/background_space1.png", size, size);
     }
 
     /**
@@ -222,6 +229,8 @@ public class GamePanel extends JPanel implements Runnable {
         // Graphics2D will be our "pencil" for drawing stuff on the panel
         Graphics2D g2d = (Graphics2D) g;
 
+        drawBackground(g2d);
+
         // Draw obstacles
         for (Obstacle obs : obstacles)
             obs.draw(g2d);
@@ -234,5 +243,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Free resources
         g2d.dispose();
+    }
+
+    private void drawBackground(Graphics2D g2d) {
+        g2d.drawImage(imgBackground, 0, 0, this);
     }
 }

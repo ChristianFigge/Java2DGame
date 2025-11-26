@@ -1,13 +1,12 @@
 package game.entities;
 
-import javax.imageio.ImageIO;
+import game.util.ResourceHelper;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 public class Player extends BaseEntity<Ellipse2D.Double> {
 
@@ -18,7 +17,7 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
     public static final double BOOST_SPEED = 5.0;
 
     private boolean isHit = false;
-    private BufferedImage imgShip;
+    private final BufferedImage imgShip = ResourceHelper.loadImage("/images/spaceship_player.png");
     /*------------------------- ATTRIBUTES -------------------------*/
 
     /*++++++++++++++++++++ CONSTRUCTORS / INIT +++++++++++++++++++++*/
@@ -27,17 +26,6 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
         super(posX, posY, DEFAULT_WIDTH, DEFAULT_HEIGHT, panelWidth, panelHeight);
         hitboxColor = Color.green;
         speed = DEFAULT_SPEED;
-
-        // Load spaceship sprite
-        try {
-            imgShip = ImageIO.read(
-                    Objects.requireNonNull(
-                            this.getClass().getResource("/images/spaceship_player.png")
-                    )
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
