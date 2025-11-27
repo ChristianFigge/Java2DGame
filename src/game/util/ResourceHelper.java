@@ -31,7 +31,7 @@ public class ResourceHelper {
         return scaled;
     }
 
-    public static BufferedImage loadImageAndScale(String pathToImage, int targetWidth, int targetHeight) {
+    public static BufferedImage loadAndScaleImage(String pathToImage, int targetWidth, int targetHeight) {
         return scaleImage(loadImage(pathToImage), targetWidth, targetHeight);
     }
 }

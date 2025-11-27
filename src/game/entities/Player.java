@@ -1,5 +1,6 @@
 package game.entities;
 
+import game.input.KeyboardInput;
 import game.util.ResourceHelper;
 
 import java.awt.*;
@@ -11,13 +12,19 @@ import java.util.List;
 public class Player extends BaseEntity<Ellipse2D.Double> {
 
     /*+++++++++++++++++++++++++ ATTRIBUTES +++++++++++++++++++++++++*/
-    public static final double DEFAULT_WIDTH = 40.0;
-    public static final double DEFAULT_HEIGHT = 40.0;
+    public static final double DEFAULT_WIDTH = 49.0;
+    public static final double DEFAULT_HEIGHT = 49.0;
     public static final double DEFAULT_SPEED = 2.0;
     public static final double BOOST_SPEED = 5.0;
 
     private boolean isHit = false;
-    private final BufferedImage imgShip = ResourceHelper.loadImage("/images/spaceship_player.png");
+
+    // TODO create Sprite class
+    private final BufferedImage sprite = ResourceHelper.loadImage("/images/spaceship_player.png");
+    private double spriteRotation = 0.0;
+    private static final double ROTATE_DEGREES = 25.0; // Degrees to rotate left or right based on input
+    private static final double BOOST_ROTATE_FACTOR = 1.5; // Multiplier for rotation while speed boosting / sprinting
+
     /*------------------------- ATTRIBUTES -------------------------*/
 
     /*++++++++++++++++++++ CONSTRUCTORS / INIT +++++++++++++++++++++*/
@@ -47,16 +54,16 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
             g2d.draw(hitbox);
         }
 
-        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
         // Use affine transform for positioning & scaling of the spaceship image
-        // (Not very efficient, but flexible and easy to implement. Will do for now)
+        // TODO create Sprite class
         AffineTransform at = new AffineTransform();
         at.translate(hitbox.x, hitbox.y);
-        at.scale(DEFAULT_WIDTH / imgShip.getWidth(),
-                DEFAULT_HEIGHT / imgShip.getHeight());
+        at.scale(DEFAULT_WIDTH / sprite.getWidth(), DEFAULT_HEIGHT / sprite.getHeight());
 
-        g2d.drawImage(imgShip, at, null);
+        if(spriteRotation != 0.0)
+            at.rotate(Math.toRadians(spriteRotation), sprite.getWidth() / 2.0, sprite.getHeight() / 2.0);
+
+        g2d.drawImage(sprite, at, null);
     }
 
     public void setHitboxColor(Color color) {
@@ -65,6 +72,7 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
 
     public void moveLeft() {
         hitbox.x -= speed;
+        spriteRotation = -ROTATE_DEGREES;
         // Prevent entity from leaving the game panel
         if (hitbox.x < 0.0)
             hitbox.x = 0.0;
@@ -72,6 +80,7 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
 
     public void moveRight() {
         hitbox.x += speed;
+        spriteRotation = ROTATE_DEGREES;
         // Prevent entity from leaving the game panel
         double right_bound = panelWidth - hitbox.width - 1;
         if (hitbox.x > right_bound)
@@ -91,6 +100,27 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
         double bottom_bound = panelHeight - hitbox.height - 1;
         if (hitbox.y > bottom_bound)
             hitbox.y = bottom_bound;
+    }
+
+    public void handleKeyboardInput(KeyboardInput keyboard) {
+        // Sprite rotation is movement-dependent.
+        // So we reset it to 0.0 und update based on input.
+        spriteRotation = 0.0;
+
+        if (keyboard.left)
+            moveLeft();
+        if (keyboard.right)
+            moveRight();
+        if (keyboard.up)
+            moveUp();
+        if (keyboard.down)
+            moveDown();
+        if (keyboard.sprint) {
+            spriteRotation *= BOOST_ROTATE_FACTOR;
+            setSpeed(Player.BOOST_SPEED);
+        }
+        else
+            setSpeed(Player.DEFAULT_SPEED);
     }
 
     public void setPos(int posX, int posY) {

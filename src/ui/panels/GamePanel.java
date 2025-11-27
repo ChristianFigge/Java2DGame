@@ -59,7 +59,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Init background image (assumes square image!)
         int size = Math.max(this.width, this.height);
-        imgBackground = ResourceHelper.loadImageAndScale("/images/bg_space1.png", size, size);
+        imgBackground = ResourceHelper.loadAndScaleImage("/images/bg_space1.png", size, size);
 
         /*
         // Make mouse cursor invisible (only while it's inside the panel)
@@ -181,18 +181,10 @@ public class GamePanel extends JPanel implements Runnable {
      * Reads keyboard input and changes the game state accordingly.
      */
     private void handleKeyboardInput() {
-        if (keyboard.left)
-            this.player.moveLeft();
-        if (keyboard.right)
-            this.player.moveRight();
-        if (keyboard.up)
-            this.player.moveUp();
-        if (keyboard.down)
-            this.player.moveDown();
-        if (keyboard.sprint)
-            this.player.setSpeed(Player.BOOST_SPEED);
-        else
-            this.player.setSpeed(Player.DEFAULT_SPEED);
+        // Player class handles player entity controls:
+        this.player.handleKeyboardInput(keyboard);
+
+        // Maybe do other stuff here later
     }
 
     /**
