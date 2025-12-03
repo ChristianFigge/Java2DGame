@@ -93,6 +93,20 @@ public abstract class BaseEntity<S extends Shape> {
     }
 
     /**
+     * Returns the speed of this entity in pixels per frame.
+     * @return the speed of this entity in pixels per frame
+     */
+    public double getSpeed() { return this.speed; }
+
+    /**
+     * Sets the speed of this entity in pixels per frame.
+     * @param newSpeed new speed of the entity
+     */
+    public void setSpeed(double newSpeed) {
+        this.speed = newSpeed;
+    }
+
+    /**
      * Checks if every part of the entity is within the bounds of the game panel.
      */
     public boolean isCompletelyInPanel() {

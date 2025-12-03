@@ -11,6 +11,7 @@ import game.entities.Player;
 import game.input.KeyboardInput;
 import game.input.MouseInput;
 import game.util.ObstacleRowFactory;
+import game.util.ResourceHelper;
 
 /**
  * This is a subclass of JPanel that displays and runs the game.
@@ -24,6 +25,9 @@ public class GamePanel extends JPanel implements Runnable {
     int width;
     int height;
     Player player;
+
+    BufferedImage imgBackground;
+    private double bgY = 0.0;
 
     double gameDifficulty = 1.0;
     ObstacleRowFactory obsRowFactory;
@@ -53,6 +57,11 @@ public class GamePanel extends JPanel implements Runnable {
 
         addKeyListener(this.keyboard); // Add listener for keyboard events
 
+        // Init background image (assumes square image!)
+        int size = Math.max(this.width, this.height);
+        imgBackground = ResourceHelper.loadAndScaleImage("/images/bg_space1.png", size, size);
+
+        /*
         // Make mouse cursor invisible (only while it's inside the panel)
         setCursor(
                 Toolkit.getDefaultToolkit().createCustomCursor(
@@ -66,13 +75,14 @@ public class GamePanel extends JPanel implements Runnable {
         // Our MouseListener combines them, though
         addMouseMotionListener(this.mouse);
         addMouseListener(this.mouse);
+        */
     }
 
     /**
      * Creates a GamePanel with default width and height (480x360).
      */
     public GamePanel() {
-        this(480, 360);
+        this(800, 600);
     }
 
     public void startGame() {
@@ -171,14 +181,10 @@ public class GamePanel extends JPanel implements Runnable {
      * Reads keyboard input and changes the game state accordingly.
      */
     private void handleKeyboardInput() {
-        if (keyboard.left)
-            this.player.moveLeft();
-        if (keyboard.right)
-            this.player.moveRight();
-        if (keyboard.up)
-            this.player.moveUp();
-        if (keyboard.down)
-            this.player.moveDown();
+        // Player class handles player entity controls:
+        this.player.handleKeyboardInput(keyboard);
+
+        // Maybe do other stuff here later
     }
 
     /**
@@ -218,6 +224,8 @@ public class GamePanel extends JPanel implements Runnable {
         // Graphics2D will be our "pencil" for drawing stuff on the panel
         Graphics2D g2d = (Graphics2D) g;
 
+        drawBackground(g2d);
+
         // Draw obstacles
         for (Obstacle obs : obstacles)
             obs.draw(g2d);
@@ -230,5 +238,31 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Free resources
         g2d.dispose();
+    }
+
+    /**
+     * Uses a seamlessly tileable image (think of textures)
+     * that is drawn twice (one below the other) and pushed along
+     * the y-Axis to create a scrolling background on the panel.
+     * @param g2d the Graphics2D object of the panel
+     */
+    private void drawBackground(Graphics2D g2d) {
+        // Increment Y-Position of the first image:
+        // Scrolls background down by 1 pixel every 3 frames
+        bgY += 1.0 / 3.0;
+        // Y-Position of the second instance of the same image
+        // that will be drawn above the first
+        double y2 = bgY - imgBackground.getHeight();
+
+        // If the lower image A leaves the panel, first switch its position
+        // with upper image B and then put B above that
+        if (bgY >= this.height) {
+            bgY = y2;
+            y2 = y2 - imgBackground.getHeight();
+        }
+
+        // Render image twice at different Y-coordinates
+        g2d.drawImage(imgBackground, 0, (int)Math.round(bgY), this);
+        g2d.drawImage(imgBackground, 0, (int)Math.round(y2), this);
     }
 }
