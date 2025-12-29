@@ -8,7 +8,6 @@ public class Main {
         appWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Quit the app when closing the window
         appWindow.setResizable(false); // The window has a fixed size
 
-        //GamePanel gamePanel = new GamePanel();
         GameContainer gamePanel = new GameContainer(800, 600);
         appWindow.add(gamePanel);
 

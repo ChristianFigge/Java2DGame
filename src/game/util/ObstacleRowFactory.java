@@ -7,23 +7,14 @@ import java.util.List;
 import java.util.Random;
 
 public class ObstacleRowFactory {
-
     /**
      * Default height of the obstacles in an obstacle row, in pixels.
      */
     public static final double DEFAULT_ROW_HEIGHT = 10;
 
-    /**
-     * A random number generator used to create the obstacles.
-     */
     private final Random rng = new Random();
-
-    /**
-     * Information about the game panel dimensions, needed for constructing Obstacle objects.
-     */
     private int panelWidth, panelHeight;
     private double gameDifficulty = 1.0;
-
 
     public ObstacleRowFactory(double gameDifficulty, int panelWidth, int panelHeight) {
         this.panelWidth = panelWidth;

@@ -7,7 +7,6 @@ public class Coin extends BaseEntity<Ellipse2D.Double> {
 
     public Coin(double posX, double posY, double width, double height, int panelWidth, int panelHeight) {
         super(posX, posY, width, height, panelWidth, panelHeight);
-
         this.hitboxColor = Color.ORANGE;
     }
 

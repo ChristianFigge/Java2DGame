@@ -6,8 +6,7 @@ import java.awt.*;
 public class GameOverOverlay extends JPanel {
 
     public GameOverOverlay(GameContainer gameContainer) {
-
-        setOpaque(false); // wichtig!
+        setOpaque(false);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JLabel lblGameOver = new JLabel("GAME OVER");
@@ -34,7 +33,7 @@ public class GameOverOverlay extends JPanel {
 
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setComposite(AlphaComposite.getInstance(
-                AlphaComposite.SRC_OVER, 0.6f)); // Transparence
+                AlphaComposite.SRC_OVER, 0.6f)); // Transparent
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, getWidth(), getHeight());
         g2.dispose();

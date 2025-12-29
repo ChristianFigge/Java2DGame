@@ -140,8 +140,8 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
     public boolean isHit() { return this.isHit; }
 
     /**
-     * Checks if the Player collides with any Entity in the given List,
-     * blocks Player movement and sets the isHit Attribute accordingly.
+     * Checks if the Player collides with any Obstacle in the given List,
+     * blocks Player movement and sets the isHit attribute accordingly.
      * @param obstacles A List of BaseEntities (e.g. Obstacles)
      */
     public boolean isHitByObstacle(List<Obstacle> obstacles) {
@@ -162,7 +162,7 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
                     } else if ((outcode & Rectangle2D.OUT_BOTTOM) != 0) {
                         hitbox.y += 1; // Push player downward
                     }
-                    continue; // Recheck for collision
+                    continue; // Recheck collision
                 }
 
                 // Check collisions on X axis
@@ -179,10 +179,16 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
         return this.isHit;
     }
 
-    public <T extends BaseEntity<?>> boolean isHitByCoin(List<T> entities) {
-        for(T e: entities) {
+    /**
+     * Checks if the Player collides with any Coin in the given List.
+     * If true, it removes that Coin object from the List.
+     * @param coins List of Coin objects
+     * @return true/false
+     */
+    public boolean isHitByCoin(List<Coin> coins) {
+        for(Coin e: coins) {
             if(this.collidesWith(e)) {
-                entities.remove(e);
+                coins.remove(e);
                 return true;
             }
         }

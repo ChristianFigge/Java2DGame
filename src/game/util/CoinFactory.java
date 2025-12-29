@@ -1,7 +1,6 @@
 package game.util;
 
 import game.entities.Coin;
-import game.entities.Obstacle;
 import game.entities.Player;
 
 import java.util.ArrayList;
@@ -46,11 +45,18 @@ public class CoinFactory {
      * These coins are then added to the provided List of Coin Objects.
      *
      */
+
+    /**
+     * Creates 1 to 3 coins that are placed randomly in a rectangular area
+     * with a specified height and the width of the game panel (in pixels).
+     * These coins are then added to the provided List of Coin Objects.
+     *
+     * @param areaHeight height of the area in pixels
+     * @param coins list of coins
+     */
     public void createCoinsInArea(int areaHeight, List<Coin> coins) {
         // Randomly define the number of coins to generate
         final int numOfCoins = rng.nextInt(4);
-
-        System.out.println("About to create" + numOfCoins + " coins!");
 
         if(numOfCoins > 0) {
             // Define bounds for random coordinates
@@ -62,8 +68,6 @@ public class CoinFactory {
             int minX = (int)Player.DEFAULT_WIDTH;
             int rangeX = maxX - minX;
 
-            // Collection for accepted Coins, so we can easily check for overlaps
-            // and deny generated Coins, if necessary
             List<Coin> newCoins = new ArrayList<>(numOfCoins);
 
             // Generate <numOfCoins> new Coins
@@ -75,8 +79,8 @@ public class CoinFactory {
                     int y = minY + rng.nextInt(rangeY);
                     potentialCoin = new Coin(x, y, DEFAULT_COIN_DIAMETER, panelWidth, panelHeight);
 
-                    // Check if new Coin overlaps with existing Coins
-                    // and if it does, create new coin
+                    // Check if the generated Coin overlaps with existing Coins
+                    // and if it does, discards it and creates a new one
                     for(Coin c: newCoins) {
                         if(potentialCoin.collidesWith(c)) {
                             potentialCoin = null;
@@ -86,10 +90,7 @@ public class CoinFactory {
                 }
                 newCoins.add(potentialCoin);
             }
-            System.out.println("Created " + newCoins.size() + " random Coins!");
             coins.addAll(newCoins);
         }
-
-
     }
 }
