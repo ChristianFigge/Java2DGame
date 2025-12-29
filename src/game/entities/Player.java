@@ -6,6 +6,7 @@ import game.util.ResourceHelper;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -123,25 +124,57 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
             setSpeed(Player.DEFAULT_SPEED);
     }
 
-    public void setPos(int posX, int posY) {
+    public void setX(int posX) {
         hitbox.x = posX;
+    }
+
+    public void setY(int posY) {
         hitbox.y = posY;
+    }
+
+    public void setPos(int posX, int posY) {
+        setX(posX);
+        setY(posY);
     }
 
     public boolean isHit() { return this.isHit; }
 
     /**
-     * Checks if the Player collides with any Entity in the given List
-     * and sets the isHit Attribute accordingly.
-     * @param entities A List of BaseEntities (e.g. Obstacles)
+     * Checks if the Player collides with any Entity in the given List,
+     * blocks Player movement and sets the isHit Attribute accordingly.
+     * @param obstacles A List of BaseEntities (e.g. Obstacles)
      */
-    public <T extends BaseEntity<?>> boolean isHitByObstacle(List<T> entities) {
+    public boolean isHitByObstacle(List<Obstacle> obstacles) {
         this.isHit = false;
-        for(T e: entities) {
-            if(this.collidesWith(e)) {
-                this.isHit = true;
-                break;
+        for(Obstacle obs: obstacles) {
+            while(this.collidesWith(obs)) {
+                if(!this.isHit) this.isHit = true;
+
+                // Get info on which side of the Obstacle the Player is (left, top, right...)
+                int outcode = obs.hitbox.outcode(getX(), getY())
+                        | obs.hitbox.outcode(getX() + hitbox.width, getY() + hitbox.height);
+
+                // Check collisions on Y axis
+                // Ignore this part if outcode suggests BOTH Top & Down (possible depending on obstacle height)
+                if(((outcode & Rectangle2D.OUT_TOP) != 0) ^ ((outcode & Rectangle2D.OUT_BOTTOM) != 0)) {
+                    if ((outcode & Rectangle2D.OUT_TOP) != 0) {
+                        hitbox.y -= 1; // Push player upward
+                    } else if ((outcode & Rectangle2D.OUT_BOTTOM) != 0) {
+                        hitbox.y += 1; // Push player downward
+                    }
+                    continue; // Recheck for collision
+                }
+
+                // Check collisions on X axis
+                if((outcode & Rectangle2D.OUT_LEFT) != 0) {
+                    hitbox.x -= 1; // Push player rightward
+                }
+                else if ((outcode & Rectangle2D.OUT_RIGHT) != 0) {
+                    hitbox.x += 1; // Push player leftward
+                }
             }
+
+            if(this.isHit) break;
         }
         return this.isHit;
     }
