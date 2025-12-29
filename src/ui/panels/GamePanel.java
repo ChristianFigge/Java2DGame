@@ -162,11 +162,18 @@ public class GamePanel extends JPanel implements Runnable {
         else
             handleKeyboardInput();
 
-        if(player.isHitBy(obstacles)) {
+        // COLLISION CHECKS:
+        // Obstacle collision
+        if(player.isHitByObstacle(obstacles)) {
             // TODO Punish player, e.g. lose score points or life
             player.setHitboxColor(Color.red);
         } else {
             player.setHitboxColor(Color.green);
+        }
+
+        // Coin collision
+        if(player.isHitByCoin(coins)) {
+            // TODO Reward player, e.g. increase score points
         }
 
         // Move Obstacles down the panel

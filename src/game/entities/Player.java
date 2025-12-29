@@ -135,14 +135,24 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
      * and sets the isHit Attribute accordingly.
      * @param entities A List of BaseEntities (e.g. Obstacles)
      */
-    public <T extends BaseEntity<?>> boolean isHitBy(List<T> entities) {
+    public <T extends BaseEntity<?>> boolean isHitByObstacle(List<T> entities) {
+        this.isHit = false;
         for(T e: entities) {
             if(this.collidesWith(e)) {
                 this.isHit = true;
+                break;
+            }
+        }
+        return this.isHit;
+    }
+
+    public <T extends BaseEntity<?>> boolean isHitByCoin(List<T> entities) {
+        for(T e: entities) {
+            if(this.collidesWith(e)) {
+                entities.remove(e);
                 return true;
             }
         }
-        this.isHit = false;
         return false;
     }
 }
