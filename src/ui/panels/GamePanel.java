@@ -176,7 +176,7 @@ public class GamePanel extends JPanel implements Runnable {
             // TODO Reward player, e.g. increase score points
         }
 
-        // Move Obstacles down the panel
+        // Move Coins & Obstacles down the panel
         descendCoinsAndObstacles();
 
         // Create new Obstacles & Coins, if needed
@@ -186,9 +186,15 @@ public class GamePanel extends JPanel implements Runnable {
             coinFactory.createCoinsInArea(obsDistance, coins);
         }
 
+        // TODO DRY
         // Remove obstacles that have already left the panel, so we don't run out of RAM
         while (!(obstacles.isEmpty()) && obstacles.peekFirst().getY() > this.width) {
             obstacles.removeFirst();
+        }
+
+        // Remove coins that have already left the panel, so we don't run out of RAM
+        while (!(coins.isEmpty()) && coins.peekFirst().getY() > this.width) {
+            coins.removeFirst();
         }
     }
 
