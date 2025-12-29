@@ -6,10 +6,12 @@ import java.util.LinkedList;
 
 import javax.swing.JPanel;
 
+import game.entities.Coin;
 import game.entities.Obstacle;
 import game.entities.Player;
 import game.input.KeyboardInput;
 import game.input.MouseInput;
+import game.util.CoinFactory;
 import game.util.ObstacleRowFactory;
 import game.util.ResourceHelper;
 
@@ -32,6 +34,8 @@ public class GamePanel extends JPanel implements Runnable {
     double gameDifficulty = 1.0;
     ObstacleRowFactory obsRowFactory;
     LinkedList<Obstacle> obstacles = new LinkedList<>();
+    CoinFactory coinFactory;
+    LinkedList<Coin> coins = new LinkedList<>();
 
     Thread gameThread;
     KeyboardInput keyboard = new KeyboardInput();
@@ -47,7 +51,10 @@ public class GamePanel extends JPanel implements Runnable {
         this.height = height;
         // Spawn player entity in the center of the panel (approx)
         this.player = new Player(width / 2.0, height / 2.0, width, height);
+
+        // Create Factories
         this.obsRowFactory = new ObstacleRowFactory(gameDifficulty, width, height);
+        this.coinFactory = new CoinFactory(gameDifficulty, width, height);
 
         setPreferredSize(new Dimension(width, height));
         setBackground(Color.black);
@@ -163,12 +170,13 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         // Move Obstacles down the panel
-        descendObstacles();
+        descendCoinsAndObstacles();
 
-        // If needed, create new Obstacles
+        // Create new Obstacles & Coins, if needed
         int obsDistance = 200; // TODO use gameDifficulty to calculate obstacle distance
         if (obstacles.isEmpty() || obstacles.peekLast().getY() > obsDistance) {
             obsRowFactory.createObstacleRow(obstacles);
+            coinFactory.createCoinsInArea(obsDistance, coins);
         }
 
         // Remove obstacles that have already left the panel, so we don't run out of RAM
@@ -205,9 +213,13 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.drawString(this.fps + " FPS", 0, 12);
     }
 
-    private void descendObstacles() {
+    private void descendCoinsAndObstacles() {
         for (Obstacle obs : obstacles) {
             obs.moveDown();
+        }
+
+        for (Coin c: coins) {
+            c.moveDown();
         }
     }
 
@@ -229,6 +241,10 @@ public class GamePanel extends JPanel implements Runnable {
         // Draw obstacles
         for (Obstacle obs : obstacles)
             obs.draw(g2d);
+
+        // Draw coins
+        for(Coin c: coins)
+            c.draw(g2d);
 
         // Give player the pencil to draw h*self
         this.player.draw(g2d);

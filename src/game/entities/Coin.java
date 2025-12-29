@@ -11,8 +11,16 @@ public class Coin extends BaseEntity<Ellipse2D.Double> {
         this.hitboxColor = Color.ORANGE;
     }
 
+    public Coin(double posX, double posY, double diameter, int panelWidth, int panelHeight) {
+        this(posX, posY, diameter, diameter, panelWidth, panelHeight);
+    }
+
     @Override
     protected Ellipse2D.Double createHitbox(double posX, double posY, double width, double height) {
         return new Ellipse2D.Double(posX, posY, width, height);
+    }
+
+    public void moveDown() {
+        hitbox.y += speed;
     }
 }
