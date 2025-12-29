@@ -27,6 +27,7 @@ public class GamePanel extends JPanel implements Runnable {
     int width;
     int height;
     Player player;
+    int playerScore = 0;
 
     BufferedImage imgBackground;
     private double bgY = 0.0;
@@ -167,6 +168,7 @@ public class GamePanel extends JPanel implements Runnable {
         if(player.isHitByObstacle(obstacles)) {
             // TODO Punish player, e.g. lose score points or life
             player.setHitboxColor(Color.red);
+            playerScore -= 10;
         } else {
             player.setHitboxColor(Color.green);
         }
@@ -174,6 +176,7 @@ public class GamePanel extends JPanel implements Runnable {
         // Coin collision
         if(player.isHitByCoin(coins)) {
             // TODO Reward player, e.g. increase score points
+            playerScore += 100;
         }
 
         // Move Coins & Obstacles down the panel
@@ -226,6 +229,16 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.drawString(this.fps + " FPS", 0, 12);
     }
 
+    private void printScoreOnPanel(Graphics2D g2d) {
+        if(player.isHit())
+            g2d.setColor(Color.red);
+        else
+            g2d.setColor(Color.white);
+
+        g2d.setFont(new Font("Arial", Font.BOLD, 24));
+        g2d.drawString("Score: " + this.playerScore, 0, height - 12);
+    }
+
     private void descendCoinsAndObstacles() {
         for (Obstacle obs : obstacles) {
             obs.moveDown();
@@ -264,6 +277,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (drawFPS)
             printFPSOnPanel(g2d);
+
+        printScoreOnPanel(g2d);
 
         // Free resources
         g2d.dispose();
