@@ -1,4 +1,4 @@
-import ui.panels.GamePanel;
+import ui.panels.GameContainer;
 
 import javax.swing.*;
 
@@ -8,7 +8,8 @@ public class Main {
         appWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Quit the app when closing the window
         appWindow.setResizable(false); // The window has a fixed size
 
-        GamePanel gamePanel = new GamePanel();
+        //GamePanel gamePanel = new GamePanel();
+        GameContainer gamePanel = new GameContainer(800, 600);
         appWindow.add(gamePanel);
 
         // Add Panels here
@@ -17,6 +18,6 @@ public class Main {
         appWindow.setLocationRelativeTo(null); // Parameter "null" places the window in the center of the screen
         appWindow.setVisible(true); // Make the window actually appear on screen
 
-        gamePanel.startGame(); // Start the game loop
+        gamePanel.startNewGame(); // Start the game loop
     }
 }

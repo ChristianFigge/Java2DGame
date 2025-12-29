@@ -24,21 +24,23 @@ public class GamePanel extends JPanel implements Runnable {
     // Floor division, but input feels smoother compared to using Nanoseconds
     public static final long DESIRED_FRAMETIME_MILLIS = 1000 / DESIRED_FPS;
 
+    private GameContainer gameContainer;
     int width;
     int height;
     Player player;
-    int playerScore = 0;
+    int playerScore;
 
     BufferedImage imgBackground;
-    private double bgY = 0.0;
+    private double bgY;
 
-    double gameDifficulty = 1.0;
+    double gameDifficulty;
     ObstacleRowFactory obsRowFactory;
-    LinkedList<Obstacle> obstacles = new LinkedList<>();
+    LinkedList<Obstacle> obstacles;
     CoinFactory coinFactory;
-    LinkedList<Coin> coins = new LinkedList<>();
+    LinkedList<Coin> coins;
 
     Thread gameThread;
+    boolean gameIsRunning = false;
     KeyboardInput keyboard = new KeyboardInput();
     MouseInput mouse = new MouseInput();
 
@@ -47,11 +49,11 @@ public class GamePanel extends JPanel implements Runnable {
     /*------------------------- ATTRIBUTES -------------------------*/
 
     /*++++++++++++++++++++ CONSTRUCTORS / INIT +++++++++++++++++++++*/
-    public GamePanel(int width, int height) {
+    public GamePanel(int width, int height, GameContainer gameContainer) {
+        this.gameContainer = gameContainer;
+
         this.width = width;
         this.height = height;
-        // Spawn player entity in the center of the panel (approx)
-        this.player = new Player(width / 2.0, height / 2.0, width, height);
 
         // Create Factories
         this.obsRowFactory = new ObstacleRowFactory(gameDifficulty, width, height);
@@ -86,14 +88,33 @@ public class GamePanel extends JPanel implements Runnable {
         */
     }
 
-    /**
-     * Creates a GamePanel with default width and height (480x360).
-     */
-    public GamePanel() {
-        this(800, 600);
+    private void initGame() {
+        // Spawn player entity in the center of the panel (approx)
+        this.player = new Player(width / 2.0, height / 2.0, width, height);
+
+        // Create empty lists for Coins & Obstacles
+        this.obstacles = new LinkedList<Obstacle>();
+        this.coins = new LinkedList<Coin>();
+
+        // Init game vars
+        bgY = 0.0;
+        playerScore = 0;
+        gameDifficulty = 1.0;
+        gameIsRunning = true;
     }
 
-    public void startGame() {
+    public void startNewGame() {
+        if(gameThread != null) {
+            gameIsRunning = false;
+            try {
+                gameThread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        initGame();
+
         this.gameThread = new Thread(this);
         this.gameThread.start(); // executes run()
     }
@@ -110,7 +131,7 @@ public class GamePanel extends JPanel implements Runnable {
         long lastSecondTime = System.currentTimeMillis();
         int frame_count = 0;
 
-        while (this.gameThread != null) {
+        while (this.gameThread != null && gameIsRunning) {
             // While the game grows more complex, execution of update() and repaint()
             // might take a few milliseconds on slower machines.
             // To offset this delay for the sleep time per frame, we measure the
@@ -194,11 +215,28 @@ public class GamePanel extends JPanel implements Runnable {
         while (!(obstacles.isEmpty()) && obstacles.peekFirst().getY() > this.width) {
             obstacles.removeFirst();
         }
-
         // Remove coins that have already left the panel, so we don't run out of RAM
         while (!(coins.isEmpty()) && coins.peekFirst().getY() > this.width) {
             coins.removeFirst();
         }
+
+        if(gameIsOver()) {
+            this.gameIsRunning = false;
+            gameContainer.showGameOver(true);
+        }
+    }
+
+    /**
+     * Defines Losing conditions and returns result.
+     *
+     * @return boolean, if the current game is lost or not
+     */
+    private boolean gameIsOver() {
+        if(this.playerScore < 0) {
+            return true;
+        }
+
+        return player.getY() > this.height;
     }
 
     /**
