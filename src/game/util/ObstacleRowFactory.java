@@ -14,17 +14,10 @@ public class ObstacleRowFactory {
 
     private final Random rng = new Random();
     private int panelWidth, panelHeight;
-    private double gameDifficulty = 1.0;
 
-    public ObstacleRowFactory(double gameDifficulty, int panelWidth, int panelHeight) {
+    public ObstacleRowFactory(int panelWidth, int panelHeight) {
         this.panelWidth = panelWidth;
         this.panelHeight = panelHeight;
-        setDifficulty(gameDifficulty);
-    }
-
-    public void setDifficulty(double gameDifficulty) {
-        this.gameDifficulty = gameDifficulty;
-        // Maybe later do some stuff here
     }
 
     public void setRngSeed(long seed) {
@@ -50,14 +43,13 @@ public class ObstacleRowFactory {
      *
      * @param obstacles A List of Obstacle objects
      */
-    public void createObstacleRow(List<Obstacle> obstacles) {
+    public void createObstacleRow(float obstacleProbability, List<Obstacle> obstacles) {
         // This function divides the panelWidth in N parts which the player is guaranteed to fit through.
         // It then "coinflips" for each part to determine if it's a gap or an obstacle, but the heads/tails
         // (true/false) probabilities are derived from the game difficulty, so that gaps might be less
         // likely to occur on harder levels.
         double dPanelWidth = panelWidth; // cast to double
-        final int N = (int) (dPanelWidth / ((Player.DEFAULT_WIDTH * 2.0 + 2.0))); // TODO use gameDiff
-        float obstacleProbability = 0.75f; // TODO use gameDifficulty
+        final int N = (int) (dPanelWidth / (Player.DEFAULT_WIDTH * 2.0 + 2.0)); // use gameDiff?
 
         // Randomly determine the type of each part (obstacle or gap?)
         boolean noGap = true; // Monitors the gap creation (we need at least 1!)

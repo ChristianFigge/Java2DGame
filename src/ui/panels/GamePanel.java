@@ -11,6 +11,7 @@ import game.entities.Obstacle;
 import game.entities.Player;
 import game.input.KeyboardInput;
 import game.util.CoinFactory;
+import game.util.GameDifficulty;
 import game.util.ObstacleRowFactory;
 import game.util.ResourceHelper;
 
@@ -34,7 +35,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     private Player player;
     private int playerScore;
-    private double gameDifficulty;
+    private GameDifficulty gameDifficulty;
 
     private final ObstacleRowFactory obsRowFactory;
     private final CoinFactory coinFactory;
@@ -62,8 +63,8 @@ public class GamePanel extends JPanel implements Runnable {
         addKeyListener(this.keyboard); // Add listener for keyboard events
 
         // Init Game Entity Factories
-        obsRowFactory = new ObstacleRowFactory(gameDifficulty, width, height);
-        coinFactory = new CoinFactory(gameDifficulty, width, height);
+        obsRowFactory = new ObstacleRowFactory(width, height);
+        coinFactory = new CoinFactory(width, height);
 
         // Init background image (NOTE: assumes a square image!)
         int size = Math.max(this.panelWidth, this.panelHeight);
@@ -84,7 +85,7 @@ public class GamePanel extends JPanel implements Runnable {
         // Init game vars
         backgroundScrollPos = 0.0;
         playerScore = 0;
-        gameDifficulty = 1.0;
+        gameDifficulty = new GameDifficulty();
         gameIsRunning = true;
     }
 
@@ -173,25 +174,32 @@ public class GamePanel extends JPanel implements Runnable {
         // COLLISION CHECKS:
         // Obstacle collision
         if(player.isHitByObstacle(obstacles)) {
-            // Punish player
             player.setHitboxColor(Color.red);
-            playerScore -= 10;
+            playerScore -= 10; // Punish player
         }
         // Coin collision
         if(player.isHitByCoin(coins)) {
-            // Reward player
-            playerScore += 100;
+            playerScore += 100; // Reward player
         }
 
+        if(gameIsOver()) {
+            this.gameIsRunning = false;
+            gameContainer.showGameOver(true);
+            return;
+        }
+
+        // Adjust game difficulty based on Score
+        gameDifficulty.setDifficultyFromScore(playerScore);
+
         // Move Coins & Obstacles down the panel
-        for (Obstacle obs : obstacles) { obs.moveDown(); }
-        for (Coin c: coins) { c.moveDown(); }
+        for (Obstacle obs : obstacles) { obs.moveDown(gameDifficulty.getEntitySpeed()); }
+        for (Coin c: coins) { c.moveDown(gameDifficulty.getEntitySpeed()); }
 
         // Create new Obstacles & Coins, if needed
-        int obsDistance = 200; // TODO use gameDifficulty to calculate obstacle distance
+        double obsDistance = gameDifficulty.getObstacleDistance();
         if (obstacles.isEmpty() || obstacles.peekLast().getY() > obsDistance) {
-            obsRowFactory.createObstacleRow(obstacles);
-            coinFactory.createCoinsInArea(obsDistance, coins);
+            obsRowFactory.createObstacleRow(gameDifficulty.getObstacleProbability(), obstacles);
+            coinFactory.createCoinsInArea((int)obsDistance, gameDifficulty.getMinCoins(), coins);
         }
 
         // TODO DRY
@@ -202,11 +210,6 @@ public class GamePanel extends JPanel implements Runnable {
         // Remove coins that have already left the panel, so we don't run out of RAM
         while (!(coins.isEmpty()) && coins.peekFirst().getY() > this.panelWidth) {
             coins.removeFirst();
-        }
-
-        if(gameIsOver()) {
-            this.gameIsRunning = false;
-            gameContainer.showGameOver(true);
         }
     }
 
@@ -240,15 +243,12 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Defines/Checks Losing conditions and returns result.
+     * Defines/Checks losing conditions and returns result.
      *
      * @return boolean, if the current game is lost or not
      */
     private boolean gameIsOver() {
-        if(this.playerScore < 0) {
-            return true;
-        }
-        return player.getY() > this.panelHeight;
+        return this.playerScore < 0 || player.getY() > this.panelHeight;
     }
 
     /**

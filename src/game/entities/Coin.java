@@ -19,7 +19,7 @@ public class Coin extends BaseEntity<Ellipse2D.Double> {
         return new Ellipse2D.Double(posX, posY, width, height);
     }
 
-    public void moveDown() {
+    public void moveDown(double speed) {
         hitbox.y += speed;
     }
 }

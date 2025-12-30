@@ -12,7 +12,7 @@ public class Obstacle extends BaseEntity<Rectangle2D.Double> {
         return new Rectangle2D.Double(posX, posY, width, height);
     }
 
-    public void moveDown() {
+    public void moveDown(double speed) {
         hitbox.y += speed;
     }
 }

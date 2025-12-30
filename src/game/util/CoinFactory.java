@@ -13,59 +13,39 @@ public class CoinFactory {
      */
     public static final double DEFAULT_COIN_DIAMETER = 20;
 
-    /**
-     * A random number generator used to create the coins.
-     */
     private final Random rng = new Random();
-
-    /**
-     * Information about the game panel dimensions, needed for constructing Coin objects.
-     */
     private int panelWidth, panelHeight;
-    private double gameDifficulty = 1.0;
 
-    public CoinFactory(double gameDifficulty, int panelWidth, int panelHeight) {
+    public CoinFactory(int panelWidth, int panelHeight) {
         this.panelWidth = panelWidth;
         this.panelHeight = panelHeight;
-        setDifficulty(gameDifficulty);
-    }
-
-    public void setDifficulty(double gameDifficulty) {
-        this.gameDifficulty = gameDifficulty;
-        // Maybe later do some stuff here
     }
 
     public void setRngSeed(long seed) {
         rng.setSeed(seed);
     }
 
-    /*
-     * Creates 1 to 3 coins that are placed randomly in a rectangular area
-     * with a specified height and the width of the game panel (in pixels).
-     * These coins are then added to the provided List of Coin Objects.
-     *
-     */
-
     /**
-     * Creates 1 to 3 coins that are placed randomly in a rectangular area
+     * Creates coins that are placed randomly in a rectangular area
      * with a specified height and the width of the game panel (in pixels).
      * These coins are then added to the provided List of Coin Objects.
      *
      * @param areaHeight height of the area in pixels
+     * @param minCoins minimum number of coins
      * @param coins list of coins
      */
-    public void createCoinsInArea(int areaHeight, List<Coin> coins) {
+    public void createCoinsInArea(int areaHeight, int minCoins, List<Coin> coins) {
         // Randomly define the number of coins to generate
-        final int numOfCoins = rng.nextInt(4);
+        final int numOfCoins = minCoins + rng.nextInt(4);
 
         if(numOfCoins > 0) {
             // Define bounds for random coordinates
             // TODO explain
-            int maxY = -(int) (ObstacleRowFactory.DEFAULT_ROW_HEIGHT + Player.DEFAULT_HEIGHT + DEFAULT_COIN_DIAMETER);
-            int minY = -(areaHeight - (int)Player.DEFAULT_HEIGHT);
+            int maxY = -(int) (ObstacleRowFactory.DEFAULT_ROW_HEIGHT + 2 * DEFAULT_COIN_DIAMETER);
+            int minY = -(areaHeight - (int)DEFAULT_COIN_DIAMETER);
             int rangeY = maxY - minY;
-            int maxX = panelWidth - (int)(Player.DEFAULT_WIDTH + DEFAULT_COIN_DIAMETER);
-            int minX = (int)Player.DEFAULT_WIDTH;
+            int maxX = panelWidth - (int)(2 * DEFAULT_COIN_DIAMETER);
+            int minX = (int)DEFAULT_COIN_DIAMETER;
             int rangeX = maxX - minX;
 
             List<Coin> newCoins = new ArrayList<>(numOfCoins);
@@ -80,7 +60,7 @@ public class CoinFactory {
                     potentialCoin = new Coin(x, y, DEFAULT_COIN_DIAMETER, panelWidth, panelHeight);
 
                     // Check if the generated Coin overlaps with existing Coins
-                    // and if it does, discards it and creates a new one
+                    // and if it does, discard it and create a new one
                     for(Coin c: newCoins) {
                         if(potentialCoin.collidesWith(c)) {
                             potentialCoin = null;
