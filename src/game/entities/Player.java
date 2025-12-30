@@ -20,7 +20,7 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
 
     private boolean isHit = false;
 
-    // TODO create Sprite class
+    // TODO create Sprite class?
     private final BufferedImage sprite = ResourceHelper.loadImage("/images/spaceship_player.png");
     private double spriteRotation = 0.0;
     private static final double ROTATE_DEGREES = 25.0; // Degrees to rotate left or right based on input
@@ -56,7 +56,7 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
         }
 
         // Use affine transform for positioning & scaling of the spaceship image
-        // TODO create Sprite class
+        // TODO create Sprite class?
         AffineTransform at = new AffineTransform();
         at.translate(hitbox.x, hitbox.y);
         at.scale(DEFAULT_WIDTH / sprite.getWidth(), DEFAULT_HEIGHT / sprite.getHeight());
@@ -72,35 +72,27 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
     }
 
     public void moveLeft() {
-        hitbox.x -= speed;
-        spriteRotation = -ROTATE_DEGREES;
         // Prevent entity from leaving the game panel
-        if (hitbox.x < 0.0)
-            hitbox.x = 0.0;
+        if (hitbox.x > 0.0)
+            hitbox.x -= speed;
     }
 
     public void moveRight() {
-        hitbox.x += speed;
-        spriteRotation = ROTATE_DEGREES;
         // Prevent entity from leaving the game panel
-        double right_bound = panelWidth - hitbox.width - 1;
-        if (hitbox.x > right_bound)
-            hitbox.x = right_bound;
+        if (hitbox.x < panelWidth - hitbox.width)
+            hitbox.x += speed;
     }
 
     public void moveUp() {
-        hitbox.y -= speed;
         // Prevent entity from leaving the game panel
-        if (hitbox.y < 0.0)
-            hitbox.y = 0.0;
+        if (hitbox.y > 0.0)
+            hitbox.y -= speed;
     }
 
     public void moveDown() {
-        hitbox.y += speed;
         // Prevent entity from leaving the game panel
-        double bottom_bound = panelHeight - hitbox.height - 1;
-        if (hitbox.y > bottom_bound)
-            hitbox.y = bottom_bound;
+        if(hitbox.y < panelHeight - hitbox.height)
+            hitbox.y += speed;
     }
 
     public void handleKeyboardInput(KeyboardInput keyboard) {
@@ -108,14 +100,18 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
         // So we reset it to 0.0 und update based on input.
         spriteRotation = 0.0;
 
-        if (keyboard.left)
+        if (keyboard.up) moveUp();
+        if (keyboard.down) moveDown();
+
+        if (keyboard.left) {
+            spriteRotation -= ROTATE_DEGREES;
             moveLeft();
-        if (keyboard.right)
+        }
+        if (keyboard.right) {
+            spriteRotation += ROTATE_DEGREES;
             moveRight();
-        if (keyboard.up)
-            moveUp();
-        if (keyboard.down)
-            moveDown();
+        }
+
         if (keyboard.sprint) {
             spriteRotation *= BOOST_ROTATE_FACTOR;
             setSpeed(Player.BOOST_SPEED);
@@ -155,7 +151,7 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
                         | obs.hitbox.outcode(getX() + hitbox.width, getY() + hitbox.height);
 
                 // Check collisions on Y axis
-                // Ignore this part if outcode suggests BOTH Top & Down (possible depending on obstacle height)
+                // Ignore this part if outcode suggests BOTH Top & Bottom (possible depending on obstacle height)
                 if(((outcode & Rectangle2D.OUT_TOP) != 0) ^ ((outcode & Rectangle2D.OUT_BOTTOM) != 0)) {
                     if ((outcode & Rectangle2D.OUT_TOP) != 0) {
                         hitbox.y -= 1; // Push player upward
@@ -167,10 +163,10 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
 
                 // Check collisions on X axis
                 if((outcode & Rectangle2D.OUT_LEFT) != 0) {
-                    hitbox.x -= 1; // Push player rightward
+                    hitbox.x -= 1; // Push player leftward
                 }
                 else if ((outcode & Rectangle2D.OUT_RIGHT) != 0) {
-                    hitbox.x += 1; // Push player leftward
+                    hitbox.x += 1; // Push player rightward
                 }
             }
 
