@@ -21,7 +21,7 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
     private boolean isHit = false;
 
     // TODO create Sprite class?
-    private final BufferedImage sprite = ResourceHelper.loadImage("/images/spaceship_player.png");
+    private final BufferedImage sprite = ResourceHelper.loadImage("/images/spaceship_with_ape.png");
     private double spriteRotation = 0.0;
     private static final double ROTATE_DEGREES = 25.0; // Degrees to rotate left or right based on input
     private static final double BOOST_ROTATE_FACTOR = 1.5; // Multiplier for rotation while speed boosting / sprinting
