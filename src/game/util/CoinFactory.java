@@ -8,10 +8,6 @@ import java.util.List;
 import java.util.Random;
 
 public class CoinFactory {
-    /**
-     * Default diameter of the coins, in pixels.
-     */
-    public static final double DEFAULT_COIN_DIAMETER = 20;
 
     private final Random rng = new Random();
     private int panelWidth, panelHeight;
@@ -41,11 +37,11 @@ public class CoinFactory {
         if(numOfCoins > 0) {
             // Define bounds for random coordinates
             // TODO explain
-            int maxY = -(int) (ObstacleRowFactory.DEFAULT_ROW_HEIGHT + 2 * DEFAULT_COIN_DIAMETER);
-            int minY = -(areaHeight - (int)DEFAULT_COIN_DIAMETER);
+            int maxY = -(int) (ObstacleRowFactory.DEFAULT_ROW_HEIGHT + 2 * Coin.DEFAULT_COIN_DIAMETER);
+            int minY = -(areaHeight - (int)Coin.DEFAULT_COIN_DIAMETER);
             int rangeY = maxY - minY;
-            int maxX = panelWidth - (int)(2 * DEFAULT_COIN_DIAMETER);
-            int minX = (int)DEFAULT_COIN_DIAMETER;
+            int maxX = panelWidth - (int)(2 * Coin.DEFAULT_COIN_DIAMETER);
+            int minX = (int)Coin.DEFAULT_COIN_DIAMETER;
             int rangeX = maxX - minX;
 
             List<Coin> newCoins = new ArrayList<>(numOfCoins);
@@ -57,7 +53,7 @@ public class CoinFactory {
                     // Generate random coordinates for next Coin
                     int x = minX + rng.nextInt(rangeX);
                     int y = minY + rng.nextInt(rangeY);
-                    potentialCoin = new Coin(x, y, DEFAULT_COIN_DIAMETER, panelWidth, panelHeight);
+                    potentialCoin = new Coin(x, y, Coin.DEFAULT_COIN_DIAMETER, panelWidth, panelHeight);
 
                     // Check if the generated Coin overlaps with existing Coins
                     // and if it does, discard it and create a new one
