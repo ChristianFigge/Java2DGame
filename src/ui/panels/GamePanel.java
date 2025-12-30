@@ -46,7 +46,7 @@ public class GamePanel extends JPanel implements Runnable {
     private Thread gameThread;
     private boolean gameIsRunning = false;
 
-    private boolean drawFPS = true;
+    private final boolean drawFPS = true;
     private long fps = 0;
     /*------------------------- ATTRIBUTES -------------------------*/
 
@@ -173,6 +173,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         // COLLISION CHECKS:
         // Obstacle collision
+        int oldScore = playerScore;
         if(player.isHitByObstacle(obstacles)) {
             player.setHitboxColor(Color.red);
             playerScore -= 10; // Punish player
@@ -189,7 +190,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         // Adjust game difficulty based on Score
-        gameDifficulty.setDifficultyFromScore(playerScore);
+        if(playerScore != oldScore) {
+            gameDifficulty.setDifficultyFromScore(playerScore);
+        }
 
         // Move Coins & Obstacles down the panel
         for (Obstacle obs : obstacles) { obs.moveDown(gameDifficulty.getEntitySpeed()); }
