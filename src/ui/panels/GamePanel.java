@@ -172,11 +172,9 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
         player.handleKeyboardInput(keyboard);
 
-        // COLLISION CHECKS:
         // Obstacle collision
         int oldScore = playerScore;
         if(player.isHitByObstacle(obstacles)) {
-            player.setHitboxColor(Color.red);
             playerScore -= 10; // Punish player
         }
         // Coin collision
@@ -222,7 +220,7 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
 
         // Graphics2D will be our "pencil" for drawing stuff on the panel
-        Graphics2D g2d = (Graphics2D) g;
+        Graphics2D g2d = (Graphics2D) g.create();
 
         drawBackground(g2d);
 
@@ -251,7 +249,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Removes descending entities from the specified List that have
+     * Removes descending BaseEntities from the specified List that have
      * left the GamePanel through its bottom.
      *
      * @param entities List of BaseEntities with LIFO-Queue ordering
@@ -293,7 +291,7 @@ public class GamePanel extends JPanel implements Runnable {
         // that will be drawn above the first
         double y2 = backgroundScrollPos - imgBackground.getHeight();
 
-        // If the lower image A leaves the panel, first switch its position
+        // If the lower image A leaves the panel, switch its position
         // with upper image B and then put B above that
         if (backgroundScrollPos >= this.panelHeight) {
             backgroundScrollPos = y2;

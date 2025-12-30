@@ -6,7 +6,7 @@ import java.awt.*;
 public class GameOverOverlay extends JPanel {
 
     public GameOverOverlay(GameContainer gameContainer) {
-        setOpaque(false);
+        setOpaque(false); // For transparency
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JLabel lblGameOver = new JLabel("GAME OVER");

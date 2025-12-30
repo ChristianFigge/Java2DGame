@@ -4,24 +4,11 @@ import game.entities.Obstacle;
 import game.entities.Player;
 
 import java.util.List;
-import java.util.Random;
 
-public class ObstacleRowFactory {
-    /**
-     * Default height of the obstacles in an obstacle row, in pixels.
-     */
-    public static final double DEFAULT_ROW_HEIGHT = 10;
-
-    private final Random rng = new Random();
-    private int panelWidth, panelHeight;
+public class ObstacleRowFactory extends BaseFactory {
 
     public ObstacleRowFactory(int panelWidth, int panelHeight) {
-        this.panelWidth = panelWidth;
-        this.panelHeight = panelHeight;
-    }
-
-    public void setRngSeed(long seed) {
-        rng.setSeed(seed);
+        super(panelWidth, panelHeight);
     }
 
     /**
@@ -75,7 +62,7 @@ public class ObstacleRowFactory {
             else if (iSuccessiveObs > 0) {
                 double x = (i - iSuccessiveObs) * partWidth; // X-coordinate of the upper left corner of the Obstacle
                 double width = iSuccessiveObs * partWidth; // Width of the Rectangle
-                obstacles.add(new Obstacle(x, -DEFAULT_ROW_HEIGHT, width, DEFAULT_ROW_HEIGHT, panelWidth, panelHeight));
+                obstacles.add(new Obstacle(x, -Obstacle.DEFAULT_HEIGHT, width, panelWidth, panelHeight));
                 iSuccessiveObs = 0; // Reset to 0
             }
         }

@@ -27,7 +27,7 @@ public abstract class BaseEntity<S extends Shape> {
     /*------------------------- ATTRIBUTES -------------------------*/
 
     /*++++++++++++++++++++ CONSTRUCTORS / INIT +++++++++++++++++++++*/
-    public BaseEntity(double posX, double posY, double width, double height, int panelWidth, int panelHeight) {
+    protected BaseEntity(double posX, double posY, double width, double height, int panelWidth, int panelHeight) {
         this.hitbox = createHitbox(posX, posY, width, height);
         this.panelWidth = panelWidth;
         this.panelHeight = panelHeight;

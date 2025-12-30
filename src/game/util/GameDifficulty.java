@@ -6,7 +6,7 @@ import game.entities.Player;
  * Provides game variables derived from the current difficulty.
  */
 public class GameDifficulty {
-    /** Defines at which score you reach maximum difficulty, if
+    /** Defines at which score the player reaches maximum difficulty, if
      * difficulty is derived from the score. */
     private static final double SCORE_LIMIT = 10000;
 
@@ -33,11 +33,11 @@ public class GameDifficulty {
         this.difficulty = Math.max(0.0, Math.min(difficulty, 1.0));
 
         // Set game variables
-        entitySpeed = MIN_ENTITY_SPEED + ENTITY_SPEED_RANGE * difficulty;
-        obstacleDistance = MAX_OBS_DISTANCE - OBS_DISTANCE_RANGE * difficulty;
-        minCoins = (int)Math.round(4.0 * (1.0 - difficulty));
-        obstacleProbability = (float)(0.25 + 0.5 * difficulty);
-        minGapWidth = Player.DEFAULT_WIDTH * (1.0 + (2.0 * (1.0 - difficulty))) + 2.0;
+        entitySpeed = MIN_ENTITY_SPEED + ENTITY_SPEED_RANGE * this.difficulty;
+        obstacleDistance = MAX_OBS_DISTANCE - OBS_DISTANCE_RANGE * this.difficulty;
+        minCoins = (int)Math.round(4.0 * (1.0 - this.difficulty));
+        obstacleProbability = (float)(0.25 + 0.5 * this.difficulty);
+        minGapWidth = Player.DEFAULT_WIDTH * (1.0 + (2.0 * (1.0 - this.difficulty))) + 2.0;
     }
 
     public void setDifficultyFromScore(double score) {

@@ -21,7 +21,9 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
     private boolean isHit = false;
 
     // TODO create Sprite class?
-    private final BufferedImage sprite = ResourceHelper.loadImage("/images/spaceship_with_ape.png");
+    private final BufferedImage sprite =
+            //ResourceHelper.loadImage("/images/spaceship_with_ape.png");
+            ResourceHelper.loadAndScaleImage("/images/spaceship_with_ape.png", (int)DEFAULT_WIDTH, (int)DEFAULT_HEIGHT);
     private double spriteRotation = 0.0;
     private static final double ROTATE_DEGREES = 25.0; // Degrees to rotate left or right based on input
     private static final double BOOST_ROTATE_FACTOR = 1.5; // Multiplier for rotation while speed boosting / sprinting
@@ -50,16 +52,14 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
         // Feedback if player hits an obstacle: Draw red hitbox outline.
         if(this.isHit) {
             g2d.setColor(Color.red);
-            //g2d.fill(hitbox);
             g2d.setStroke(new BasicStroke(3f));
             g2d.draw(hitbox);
         }
 
-        // Use affine transform for positioning & scaling of the spaceship image
-        // TODO create Sprite class?
+        // Use affine transform for positioning & rotating of the spaceship image
         AffineTransform at = new AffineTransform();
         at.translate(hitbox.x, hitbox.y);
-        at.scale(DEFAULT_WIDTH / sprite.getWidth(), DEFAULT_HEIGHT / sprite.getHeight());
+        //at.scale(DEFAULT_WIDTH / sprite.getWidth(), DEFAULT_HEIGHT / sprite.getHeight());
 
         if(spriteRotation != 0.0)
             at.rotate(Math.toRadians(spriteRotation), sprite.getWidth() / 2.0, sprite.getHeight() / 2.0);
@@ -151,7 +151,9 @@ public class Player extends BaseEntity<Ellipse2D.Double> {
                         | obs.hitbox.outcode(getX() + hitbox.width, getY() + hitbox.height);
 
                 // Check collisions on Y axis
-                // Ignore this part if outcode suggests BOTH Top & Bottom (possible depending on obstacle height)
+                // Skip if outcode suggests BOTH Top & Bottom (possible depending on obstacle height)
+                // IMPORTANT: Vertical clipping through Obstacles might cause endless loops,
+                // so make sure to move the Player at most <OBSTACLE_HEIGHT> pixels per frame.
                 if(((outcode & Rectangle2D.OUT_TOP) != 0) ^ ((outcode & Rectangle2D.OUT_BOTTOM) != 0)) {
                     if ((outcode & Rectangle2D.OUT_TOP) != 0) {
                         hitbox.y -= 1; // Push player upward
