@@ -15,9 +15,12 @@ public class Coin extends BaseEntity<Ellipse2D.Double> {
     private static final BufferedImage sprite = ResourceHelper.loadAndScaleImage(
             "/images/banana1.png", DEFAULT_COIN_DIAMETER, DEFAULT_COIN_DIAMETER);
 
+    private final int posX; // Remains constant
+
     public Coin(double posX, double posY, double width, double height, int panelWidth, int panelHeight) {
         super(posX, posY, width, height, panelWidth, panelHeight);
         this.hitboxColor = Color.ORANGE;
+        this.posX = (int)Math.round(this.getX());
     }
 
     public Coin(double posX, double posY, int panelWidth, int panelHeight) {
@@ -31,7 +34,7 @@ public class Coin extends BaseEntity<Ellipse2D.Double> {
 
     @Override
     public void draw(Graphics2D g2d) {
-        g2d.drawImage(sprite, (int)hitbox.x, (int)hitbox.y, null);
+        g2d.drawImage(sprite, posX, (int)Math.round(hitbox.y), null);
     }
 
     public void moveDown(double speed) {
