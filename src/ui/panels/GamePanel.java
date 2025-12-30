@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import javax.swing.JPanel;
 
+import game.entities.BaseEntity;
 import game.entities.Coin;
 import game.entities.Obstacle;
 import game.entities.Player;
@@ -110,9 +111,9 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread = new Thread(this);
         gameThread.start(); // executes run()
     }
-    /*-------------------- CONSTRUCTORS / INIT ---------------------*/
+    /*--------------------- CONSTRUCTORS / INIT ----------------------*/
 
-    /*++++++++++++++++++++++++++ METHODS +++++++++++++++++++++++++++*/
+    /*++++++++++++++++++++++++++ GAME LOOP +++++++++++++++++++++++++++*/
 
     /**
      * Runs the GAME LOOP, ideally in a separate Thread.
@@ -205,15 +206,9 @@ public class GamePanel extends JPanel implements Runnable {
             coinFactory.createCoinsInArea((int)obsDistance, gameDifficulty.getMinCoins(), coins);
         }
 
-        // TODO DRY
-        // Remove obstacles that have already left the panel, so we don't run out of RAM
-        while (!(obstacles.isEmpty()) && obstacles.peekFirst().getY() > this.panelWidth) {
-            obstacles.removeFirst();
-        }
-        // Remove coins that have already left the panel, so we don't run out of RAM
-        while (!(coins.isEmpty()) && coins.peekFirst().getY() > this.panelWidth) {
-            coins.removeFirst();
-        }
+        // Remove descending entities that have already left the panel, so we don't run out of RAM
+        clearEntityList(obstacles);
+        clearEntityList(coins);
     }
 
     /**
@@ -245,6 +240,7 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.dispose();
     }
 
+    /*+++++++++++++++++++++++++++ HELPER FNCS +++++++++++++++++++++++++++++*/
     /**
      * Defines/Checks losing conditions and returns result.
      *
@@ -252,6 +248,18 @@ public class GamePanel extends JPanel implements Runnable {
      */
     private boolean gameIsOver() {
         return this.playerScore < 0 || player.getY() > this.panelHeight;
+    }
+
+    /**
+     * Removes descending entities from the specified List that have
+     * left the GamePanel through its bottom.
+     *
+     * @param entities List of BaseEntities with LIFO-Queue ordering
+     */
+    private <T extends Shape> void clearEntityList(LinkedList<? extends BaseEntity<T>> entities) {
+        while (!(entities.isEmpty()) && entities.peekFirst().getY() > this.panelHeight) {
+            entities.removeFirst();
+        }
     }
 
     /**
