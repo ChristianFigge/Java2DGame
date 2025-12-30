@@ -13,8 +13,8 @@ import java.util.List;
 public class Player extends BaseEntity<Ellipse2D.Double> {
 
     /*+++++++++++++++++++++++++ ATTRIBUTES +++++++++++++++++++++++++*/
-    public static final double DEFAULT_WIDTH = 49.0;
-    public static final double DEFAULT_HEIGHT = 49.0;
+    public static final double DEFAULT_WIDTH = 56.0;
+    public static final double DEFAULT_HEIGHT = 56.0;
     public static final double DEFAULT_SPEED = 2.0;
     public static final double BOOST_SPEED = 5.0;
 
